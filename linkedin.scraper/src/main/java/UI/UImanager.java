@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
@@ -39,7 +40,7 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 
 import logger.LogManager;
 import scraper.Scraper;
-import utils.configManager;
+import utils.ConfigManager;
 
 public class UImanager {
 
@@ -52,7 +53,7 @@ public class UImanager {
 
 	public JFrame frame;
 
-	public static JTextPane linkField;
+	public static JTextArea linkField;
 
 	public static JTextPane logwindow;
 	private Thread scraperThread = null;
@@ -85,7 +86,8 @@ public class UImanager {
 			frame.add(linkLabel);
 
 			// Link text field
-			linkField = new JTextPane();
+			linkField = new JTextArea("", 190, 80);
+			linkField.setWrapStyleWord(true);
 			linkField.setBounds(10, 55, 190, 80);
 			frame.add(linkField);
 
@@ -199,7 +201,7 @@ public class UImanager {
 
 				@Override
 				public void windowClosing(WindowEvent e) {
-					Scraper.ShutDown();
+					Scraper.shutDownChrome();
 					frame.dispose();
 				}
 			});
@@ -280,7 +282,7 @@ public class UImanager {
 	}
 
 	public static String getConfigProperty(String propertyName) {
-		configManager c = new configManager();
+		ConfigManager c = new ConfigManager();
 		return c.getProperty(propertyName);
 
 	}
@@ -291,4 +293,17 @@ public class UImanager {
 //		System.out.print(getConfigProperty("email") + " " + getConfigProperty("password"));
 	}
 
+	public static String getLinkedInPostLink() {
+		return linkField.getText();
+	}
+	
+	public static void updateLoginStatus(String status) {
+		if(status.equals("LoggedIn")) {
+			loginStatusField.setForeground(new Color(6, 138, 6));
+			loginStatusField.setText("Logged In");
+		}else if(status.equals("LoggedOut")) {
+			loginStatusField.setForeground(Color.red);
+			loginStatusField.setText("Logged Out");
+		}
+	}
 }

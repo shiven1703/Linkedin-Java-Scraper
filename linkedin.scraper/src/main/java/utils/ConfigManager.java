@@ -6,12 +6,12 @@ import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
-public class configManager {
+public class ConfigManager {
 
 	private FileBasedConfiguration configuration;
 	private FileBasedConfigurationBuilder<FileBasedConfiguration> builder;
 
-	public configManager() {
+	public ConfigManager() {
 		Parameters params = new Parameters();
 		builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
 				.configure(params.properties().setFileName("config.properties"));
@@ -40,6 +40,5 @@ public class configManager {
 		}
 
 		return isUpdated;
-
 	}
 }

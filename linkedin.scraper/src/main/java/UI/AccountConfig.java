@@ -13,7 +13,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import scraper.Scraper;
-import utils.configManager;
+import utils.ConfigManager;
 
 public class AccountConfig {
 
@@ -41,6 +41,7 @@ public class AccountConfig {
 
 		// Email Field
 		emailField = new JTextField();
+		emailField.setText(new ConfigManager().getProperty("email"));
 		emailField.setBounds(180, 20, 160, 25);
 		configWindow.add(emailField);
 
@@ -93,7 +94,7 @@ public class AccountConfig {
 	private boolean updateAccountCredentials(String useremail, String userpassword) {
 		boolean isNewPropertyAdded = false;
 		try {
-			configManager c = new configManager();
+			ConfigManager c = new ConfigManager();
 			isNewPropertyAdded = c.setProperties(useremail, userpassword);
 			return isNewPropertyAdded;
 		} catch (Exception e) {
