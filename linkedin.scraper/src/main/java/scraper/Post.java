@@ -4,15 +4,16 @@ import java.util.ArrayList;
 
 public class Post {
 
-	public String author;
-	public String postContent;
-	public ArrayList<String> comments;
+	private String author;
+	private String postContent;
+	public ArrayList<Comment> comments;
 	
 	public Post(){
 		this.author = "";
 		this.postContent = "";
-		this.comments = new ArrayList<String>();
+		this.comments = new ArrayList<Comment>();
 	}
+	
 	
 	public String getAuthor() {
 		return author;
@@ -29,13 +30,12 @@ public class Post {
 	}
 	
 	
-	public void addComment(String comment) {
+	public void addComment(Comment comment) {
 		this.comments.add(comment);
 	}
 	
-	public ArrayList<String> getAllComments(){
+	public ArrayList<Comment> getAllComments(){
 		return this.comments;
 	}
-	
 	
 }

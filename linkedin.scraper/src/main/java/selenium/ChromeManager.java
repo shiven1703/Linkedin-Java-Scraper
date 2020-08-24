@@ -3,9 +3,15 @@ package selenium;
 import logger.LogManager;
 import utils.ConfigManager;
 import scraper.Post;
+import scraper.Comment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -62,7 +68,7 @@ public class ChromeManager {
 	public boolean moveToURL(WebDriver driver, String postURL) {
 		boolean isFound = false;
 		try {
-
+			LogManager.logInfo("Opeaning Post URL");
 			driver.get(postURL);
 			// wait till post loads up
 			new WebDriverWait(driver, 20).until(ExpectedConditions
@@ -84,23 +90,58 @@ public class ChromeManager {
 
 	public Post scrapComments(WebDriver driver) {
 		Post post = new Post();
-		
+		LogManager.logInfo("Scraping Comments");
 		// this code will load all comments
 		try {
 			while (driver.findElements(By.xpath("//span[text()='Load more comments']")).size() > 0) {
 				driver.findElement(By.xpath("//span[text()='Load more comments']")).click();
-				new WebDriverWait(driver, 5).until(
+				new WebDriverWait(driver, 10).until(
 						ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Load more comments']")));
 			}
+		} catch (NoSuchElementException e) {
+		} catch (TimeoutException e) {
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
+			LogManager.logError("Error loading comments.");
 		}
-		
+
 		// below code will scrap the comment section of post after load all the comments
-		WebElement commentSection = driver.findElement(By.xpath("//div[contains(@class, 'comments-comments-list')]"));
-		for(WebElement comment: commentSection.findElements(By.xpath("//div[contains(@class, 'comments-comment-item-content-body')]"))) {
-			System.out.println(comment.getText().toString());
+		try {
+
+			WebElement commentSection = driver
+					.findElement(By.xpath("//div[contains(@class, 'comments-comments-list')]"));
+			List<WebElement> Postcomments = commentSection.findElements(By.xpath(
+					".//article[contains(@class, 'comments-comments-list__comment-item comments-comment-item ember-view')]"));
+
+			for (WebElement c : Postcomments) {
+				
+				Comment comment = new Comment();
+				
+				WebElement profileDiv = c
+						.findElement(By.xpath(".//div[contains(@class, 'comments-comment-item__post-meta')]"));
+				List<WebElement> postCommenters = profileDiv.findElements(By.xpath(
+						".//h3[contains(@class, 'comments-post-meta__actor')] //span[contains(@class, 'hoverable-link-text')]"));
+
+				String profileLink = profileDiv
+						.findElement(By.xpath(".//a[contains(@class, 'comments-post-meta__actor-link')]"))
+						.getAttribute("href");
+				String author = postCommenters.get(0).getText();
+				String commentText = c
+						.findElement(By.xpath(".//div[contains(@class, 'comments-comment-item-content-body')]"))
+						.getText();
+
+				comment.setAuthor(author);
+				comment.setCommentText(commentText.trim());
+				comment.setProfileLink(profileLink);
+				post.addComment(comment);
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			LogManager.logError("Error Scraping Comments.");
 		}
+
 		return post;
 	}
 }

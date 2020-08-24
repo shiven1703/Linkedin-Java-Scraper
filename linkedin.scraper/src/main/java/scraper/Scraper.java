@@ -16,6 +16,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -27,12 +29,13 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import logger.LogManager;
 import selenium.ChromeManager;
+import utils.ExcelSheetManager;
 import UI.UImanager;
 
 public class Scraper {
 
 	private static WebDriver driver;
-	private static ChromeManager chromeManager ;
+	private static ChromeManager chromeManager;
 
 	public Scraper() {
 		try {
@@ -62,29 +65,31 @@ public class Scraper {
 			boolean isPostFound = moveToPostURL();
 			// scraping comments from post
 			if (isPostFound == true) {
-				getPostComments();
+				Post postObj = getPostComments();
+				postObj = extractEmails(postObj);
+				exportToExcel(postObj);
 			}
 		}
-		
+
 		shutDownScraper();
-//		shutDownChrome();
+		shutDownChrome();
 
 	}
 
 	private boolean performLogin() {
 		boolean loginStatus = chromeManager.login(driver);
-		if(loginStatus == false) {
+		if (loginStatus == false) {
 			shutDownChrome();
 			shutDownScraper();
-		}else {
+		} else {
 			UImanager.updateLoginStatus("LoggedIn");
 		}
 		return loginStatus;
 	}
-	
+
 	private boolean moveToPostURL() {
 		boolean isSuccessfull = chromeManager.moveToURL(driver, UImanager.getLinkedInPostLink());
-		if(isSuccessfull == false) {
+		if (isSuccessfull == false) {
 			shutDownChrome();
 			shutDownScraper();
 		}
@@ -96,8 +101,32 @@ public class Scraper {
 		return postObj;
 	}
 
-	private boolean exportToExcel() {
-		return true;
+	private Post extractEmails(Post post) {
+
+		for (int i = 0; i < post.getAllComments().size(); i++) {
+			Matcher matcher = Pattern.compile("[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}")
+					.matcher(post.comments.get(i).getCommentText().toString());
+			String email = "";
+			while (matcher.find()) {
+//					System.out.println("Comment Text : " + post.comments.get(i).getCommentText());
+//					System.out.println("Email : " + matcher.group());
+				email = email + matcher.group() + ",";
+			}
+			if (email != null && email.length() > 0) {
+				email = email.substring(0, email.length() - 1);
+			}
+			post.comments.get(i).setEmail(email);
+		}
+		return post;
+	}
+
+	private boolean exportToExcel(Post post) {
+		ExcelSheetManager excelManager = new ExcelSheetManager();
+		boolean isSuccessfull = excelManager.createExcelSheet(post);
+		if (isSuccessfull == false) {
+			LogManager.logError("Excel File Creation Failed.");
+		}
+		return isSuccessfull;
 	}
 
 	public static void shutDownScraper() {
@@ -116,5 +145,15 @@ public class Scraper {
 			e.printStackTrace();
 		}
 	}
+
+//	private void printPostObj(Post postObj) {
+//		for (int i = 0; i < postObj.comments.size(); i++) {
+//			System.out.println("Comment Text: " + postObj.comments.get(i).getCommentText());
+//			for (int j = 0; j < postObj.comments.get(i).getEmail().size(); j++) {
+//				System.out.println(postObj.comments.get(i).email.get(j));
+//			}
+//			System.out.print("\n\n");
+//		}
+//	}
 
 }
