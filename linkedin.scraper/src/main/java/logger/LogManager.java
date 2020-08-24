@@ -34,7 +34,7 @@ public class LogManager {
 	public static void logAlert(final String alertMsg) {
 		today = LocalDateTime.now();
 		logDate = formatter.format(today).toString() + " - ";
-		UImanager.appendToPane(alertMsg, Color.BLUE);
+		UImanager.appendToPane(alertMsg + "\n", Color.BLUE);
 		UImanager.logwindow.scrollRectToVisible(new Rectangle(0,(UImanager.logwindow.getHeight())+5,1,100));
 	}
 

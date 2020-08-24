@@ -202,6 +202,7 @@ public class UImanager {
 				@Override
 				public void windowClosing(WindowEvent e) {
 					Scraper.shutDownChrome();
+					Scraper.shutDownScraper();
 					frame.dispose();
 				}
 			});

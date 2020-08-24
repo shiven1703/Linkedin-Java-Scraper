@@ -1,44 +1,84 @@
 package utils;
 
-import org.apache.commons.configuration2.FileBasedConfiguration;
-import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.Parameters;
-import org.apache.commons.configuration2.ex.ConfigurationException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 public class ConfigManager {
 
-	private FileBasedConfiguration configuration;
-	private FileBasedConfigurationBuilder<FileBasedConfiguration> builder;
-
-	public ConfigManager() {
-		Parameters params = new Parameters();
-		builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
-				.configure(params.properties().setFileName("config.properties"));
+	public boolean setProperties(String email, String password, boolean isCredentialsUpdated) {
+		boolean isSuccessfull = false;
+		FileOutputStream f;
 		try {
-			configuration = builder.getConfiguration();
-			builder.setAutoSave(true);
-		} catch (ConfigurationException e) {
+			f = new FileOutputStream(new File("config.txt"));
+			ObjectOutputStream o = new ObjectOutputStream(f);
+			
+			Config newConfig = new Config(email, password, isCredentialsUpdated);
+			o.writeObject(newConfig);
+			
+			o.close();
+			f.close();
+			isSuccessfull = true;
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return isSuccessfull;
 	}
-
-	public String getProperty(String key) {
-		return (String) configuration.getProperty(key);
-	}
-
-	public boolean setProperties(String email, String password) {
-		boolean isUpdated = false;
+	
+	public String getProperty(String property) {
+		FileInputStream fi;
 		try {
-			configuration.setProperty("email", email);
-			configuration.setProperty("password", password);
-			configuration.setProperty("isCredentialsUpdated", "true");
-			isUpdated = true;
-		} catch (Exception e) {
-			// TODO: handle exception
+			
+			File f = new File("config.txt");
+			if(f.exists() == false) {
+				f.createNewFile();
+			}
+			
+			fi = new FileInputStream(new File("config.txt"));
+			ObjectInputStream oi = new ObjectInputStream(fi);
+			
+			Config config = (Config)oi.readObject();
+			
+			if(property.equals("email")) {
+				return config.email.toString();
+			}else if(property.equals("password")) {
+				return config.password.toString();
+			}else if(property.equals("isCredentialsUpdated")) {
+				return Boolean.toString(config.isCredentialsUpdated);
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		return isUpdated;
+		return "";
 	}
+}
+
+
+class Config implements Serializable{
+	
+	public String email;
+	public String password;
+	public boolean isCredentialsUpdated;
+	
+	public Config(String email, String password, boolean isCredentialsUpdated){
+		this.email = email;
+		this.password = password;
+		this.isCredentialsUpdated = isCredentialsUpdated;
+	}
+	
 }

@@ -95,7 +95,7 @@ public class AccountConfig {
 		boolean isNewPropertyAdded = false;
 		try {
 			ConfigManager c = new ConfigManager();
-			isNewPropertyAdded = c.setProperties(useremail, userpassword);
+			isNewPropertyAdded = c.setProperties(useremail, userpassword, true);
 			return isNewPropertyAdded;
 		} catch (Exception e) {
 			e.printStackTrace();

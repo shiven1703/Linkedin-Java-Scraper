@@ -45,7 +45,7 @@ public class Scraper {
 
 			// configurations
 			ChromeOptions browserConfig = new ChromeOptions();
-			// browserConfig.addArguments("--headless");
+			 browserConfig.addArguments("--headless");
 			browserConfig.addArguments("--incognito");
 			driver = new ChromeDriver(browserConfig);
 			chromeManager = new ChromeManager();
