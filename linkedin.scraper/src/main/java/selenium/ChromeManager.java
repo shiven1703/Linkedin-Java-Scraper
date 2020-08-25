@@ -3,6 +3,7 @@ package selenium;
 import logger.LogManager;
 import utils.ConfigManager;
 import scraper.Post;
+import scraper.Scraper;
 import scraper.Comment;
 
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import UI.UImanager;
 
 public class ChromeManager {
 
@@ -90,16 +93,23 @@ public class ChromeManager {
 
 	public Post scrapComments(WebDriver driver) {
 		Post post = new Post();
-		LogManager.logInfo("Scraping Comments");
+		WebDriverWait wait = new WebDriverWait(driver, 60);
+		LogManager.logInfo("Loading Comments");
+		int commentCounter = 0;
 		// this code will load all comments
 		try {
 			while (driver.findElements(By.xpath("//span[text()='Load more comments']")).size() > 0) {
 				driver.findElement(By.xpath("//span[text()='Load more comments']")).click();
-				new WebDriverWait(driver, 10).until(
+				wait.until(
 						ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Load more comments']")));
+				commentCounter = commentCounter + 10;
+				LogManager.logInfo(Integer.toString(commentCounter) + " Comments Loaded");
 			}
+			LogManager.logAlert("All Comments Loaded.");
 		} catch (NoSuchElementException e) {
+			System.out.println("No such elements exception");
 		} catch (TimeoutException e) {
+			System.out.println("Time out exception");
 		} catch (Exception e) {
 			e.printStackTrace();
 			LogManager.logError("Error loading comments.");
@@ -107,12 +117,13 @@ public class ChromeManager {
 
 		// below code will scrap the comment section of post after load all the comments
 		try {
-
+			
+			int commentScrapCount = 0;
 			WebElement commentSection = driver
 					.findElement(By.xpath("//div[contains(@class, 'comments-comments-list')]"));
 			List<WebElement> Postcomments = commentSection.findElements(By.xpath(
 					".//article[contains(@class, 'comments-comments-list__comment-item comments-comment-item ember-view')]"));
-
+			
 			for (WebElement c : Postcomments) {
 				
 				Comment comment = new Comment();
@@ -134,14 +145,15 @@ public class ChromeManager {
 				comment.setCommentText(commentText.trim());
 				comment.setProfileLink(profileLink);
 				post.addComment(comment);
-
+				commentScrapCount++;
+				LogManager.logInfo("Total " + Integer.toString(commentScrapCount) + " Scraped.");
+				
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			LogManager.logError("Error Scraping Comments.");
 		}
-
 		return post;
 	}
 }

@@ -71,7 +71,7 @@ public class ExcelSheetManager {
 			workbook.write(out);
 			out.close();
 			isCreated = true;
-			LogManager.logInfo("Excel File Generated");
+			LogManager.logInfo("Excel File Generated in current folder.");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

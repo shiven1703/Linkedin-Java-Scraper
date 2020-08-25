@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -45,8 +46,9 @@ public class Scraper {
 
 			// configurations
 			ChromeOptions browserConfig = new ChromeOptions();
-			 browserConfig.addArguments("--headless");
+//			browserConfig.addArguments("--headless");
 			browserConfig.addArguments("--incognito");
+			browserConfig.setPageLoadStrategy(PageLoadStrategy.EAGER);
 			driver = new ChromeDriver(browserConfig);
 			chromeManager = new ChromeManager();
 
@@ -90,19 +92,20 @@ public class Scraper {
 	private boolean moveToPostURL() {
 		boolean isSuccessfull = chromeManager.moveToURL(driver, UImanager.getLinkedInPostLink());
 		if (isSuccessfull == false) {
-			shutDownChrome();
 			shutDownScraper();
+			shutDownChrome();
 		}
 		return isSuccessfull;
 	}
 
 	private Post getPostComments() {
 		Post postObj = chromeManager.scrapComments(driver);
+		Scraper.shutDownChrome();
 		return postObj;
 	}
 
 	private Post extractEmails(Post post) {
-
+		System.out.println("Extracing Emails");
 		for (int i = 0; i < post.getAllComments().size(); i++) {
 			Matcher matcher = Pattern.compile("[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}")
 					.matcher(post.comments.get(i).getCommentText().toString());
@@ -121,6 +124,7 @@ public class Scraper {
 	}
 
 	private boolean exportToExcel(Post post) {
+		LogManager.logInfo("Generating Excel File.");
 		ExcelSheetManager excelManager = new ExcelSheetManager();
 		boolean isSuccessfull = excelManager.createExcelSheet(post);
 		if (isSuccessfull == false) {
@@ -145,15 +149,5 @@ public class Scraper {
 			e.printStackTrace();
 		}
 	}
-
-//	private void printPostObj(Post postObj) {
-//		for (int i = 0; i < postObj.comments.size(); i++) {
-//			System.out.println("Comment Text: " + postObj.comments.get(i).getCommentText());
-//			for (int j = 0; j < postObj.comments.get(i).getEmail().size(); j++) {
-//				System.out.println(postObj.comments.get(i).email.get(j));
-//			}
-//			System.out.print("\n\n");
-//		}
-//	}
 
 }
