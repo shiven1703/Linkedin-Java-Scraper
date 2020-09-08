@@ -98,7 +98,7 @@ public class UImanager {
 			btnStart.setBounds(10, 150, 90, 30);
 
 			btnPanel.add(btnStart);
-
+//
 			btnStart.addActionListener(new ActionListener() {
 
 				public void actionPerformed(ActionEvent e) {
@@ -184,8 +184,8 @@ public class UImanager {
 			JScrollPane logPanel = new JScrollPane(logwindow);
 			logPanel.setBounds(4, 210, 475, 245);
 			logPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-
-			logwindow.setBounds(5, 5, 465, 235);
+			
+//			logwindow.setBounds(5, 5, 465, 235);
 			frame.add(logPanel);
 
 			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

@@ -42,8 +42,15 @@ public class Scraper {
 		try {
 
 			LogManager.logInfo("Start Scraper.....................................................[Success]");
-			System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
-
+			String osName = System.getProperty("os.name").toUpperCase();
+			if(osName.contains("WINDOWS"))
+			{
+				System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
+			}
+			else
+			{	
+				System.setProperty("webdriver.chrome.driver", "chromedriver");
+			}
 			// configurations
 			ChromeOptions browserConfig = new ChromeOptions();
 //			browserConfig.addArguments("--headless");
@@ -146,7 +153,7 @@ public class Scraper {
 			driver.quit();
 			UImanager.updateLoginStatus("LoggedOut");
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 
