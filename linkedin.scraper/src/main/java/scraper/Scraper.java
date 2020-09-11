@@ -55,6 +55,7 @@ public class Scraper {
 			ChromeOptions browserConfig = new ChromeOptions();
 //			browserConfig.addArguments("--headless");
 			browserConfig.addArguments("--incognito");
+			browserConfig.addArguments("--max_old_space_size=4096");
 			browserConfig.setPageLoadStrategy(PageLoadStrategy.EAGER);
 			driver = new ChromeDriver(browserConfig);
 			chromeManager = new ChromeManager();

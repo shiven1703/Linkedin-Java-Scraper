@@ -34,7 +34,7 @@ public class ChromeManager {
 			LogManager.logInfo("Attempting Login");
 
 			// wait until login page is loaded
-			WebElement emailField = new WebDriverWait(driver, 20).until(
+			WebElement emailField = new WebDriverWait(driver, 60).until(
 					ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[contains(@id,'username')]")));
 
 			// email field is already fetched above, below will fetch password field
@@ -50,7 +50,7 @@ public class ChromeManager {
 			loginBtn.click();
 
 			// wait until home page is visible
-			new WebDriverWait(driver, 20).until(ExpectedConditions.visibilityOfElementLocated(
+			new WebDriverWait(driver, 60).until(ExpectedConditions.visibilityOfElementLocated(
 					By.xpath("//div[contains(@class, 'neptune-grid three-column ghost-animate-in')]")));
 
 			LogManager.logInfo("Login..................................................................[Success]");
@@ -74,7 +74,7 @@ public class ChromeManager {
 			LogManager.logInfo("Opeaning Post URL");
 			driver.get(postURL);
 			// wait till post loads up
-			new WebDriverWait(driver, 20).until(ExpectedConditions
+			new WebDriverWait(driver, 60).until(ExpectedConditions
 					.visibilityOfElementLocated(By.xpath("//section[contains(@class, 'fixed-full')]")));
 
 			// check for possible error
@@ -95,20 +95,27 @@ public class ChromeManager {
 		Post post = new Post();
 		WebDriverWait wait = new WebDriverWait(driver, 60);
 		LogManager.logInfo("Loading Comments");
-		int commentCounter = 0;
+		int commentCounter = driver.findElements(By.xpath("//div[contains(@class, 'comments-comments-list ember-view')] //article")).size();
 		// this code will load all comments
 		try {
 			while (driver.findElements(By.xpath("//span[text()='Load more comments']")).size() > 0) {
 				driver.findElement(By.xpath("//span[text()='Load more comments']")).click();
 				wait.until(
 						ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Load more comments']")));
-				commentCounter = commentCounter + 10;
-				LogManager.logInfo(Integer.toString(commentCounter) + " Comments Loaded");
+				int commentDivCount = driver.findElements(By.xpath("//div[contains(@class, 'comments-comments-list comments-comments-list--expanded ember-view')] //article")).size();
+				if(commentDivCount > commentCounter ) {
+					commentCounter = commentCounter + (commentDivCount-commentCounter);
+					LogManager.logInfo(Integer.toString(commentCounter) + " Comments Loaded");
+				}else {
+					LogManager.logAlert("All Comments Loaded.");
+					break;
+				}
 			}
-			LogManager.logAlert("All Comments Loaded.");
+			
 		} catch (NoSuchElementException e) {
 			System.out.println("No such elements exception");
 		} catch (TimeoutException e) {
+			LogManager.logAlert("All Comments Loaded.");
 			System.out.println("Time out exception");
 		} catch (Exception e) {
 			e.printStackTrace();
