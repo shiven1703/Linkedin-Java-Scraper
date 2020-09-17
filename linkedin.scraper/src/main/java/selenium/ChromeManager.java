@@ -8,6 +8,7 @@ import scraper.Comment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -99,6 +100,9 @@ public class ChromeManager {
 		// this code will load all comments
 		try {
 			while (driver.findElements(By.xpath("//span[text()='Load more comments']")).size() > 0) {
+				int waitTime = getRandomInt(0, 30);
+				LogManager.logAlert("Waiting for " + Integer.toString(waitTime) + " seconds");
+				Thread.sleep(waitTime * 1000);
 				driver.findElement(By.xpath("//span[text()='Load more comments']")).click();
 				wait.until(
 						ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Load more comments']")));
@@ -162,5 +166,10 @@ public class ChromeManager {
 			LogManager.logError("Error Scraping Comments.");
 		}
 		return post;
+	}
+
+	public int getRandomInt(int start, int end) {
+		Random randomNumberGenerator = new Random();
+		return randomNumberGenerator.nextInt(((end - start) + 1) + start);
 	}
 }
