@@ -1,5 +1,5 @@
 # Linkedin-Java-Scraper
-The Scraper is built with Java and Selenium.You can enter Username and password of linkedin account along with URL of the post and scraper will start a chrome instance and scrap all the comments(Top level), emails, and users profile URL.The data will be available in the folder where you .jar file in an excel format.
+The Scraper is built with Java and Selenium. You can enter Username and password of LinkedIn account along with the URL of the post and scraper will start a chrome instance and scrap all the comments(Top level), emails, and users profile URL. The data will be available in the folder where you .jar file in an excel format.
 
 # Dependencies
 
@@ -13,7 +13,7 @@ Clone the repo
 
 1) Create a new folder on your system
 
-2) Copy latest .jar file available in the "EXE" folder of the repo and put it into the folder you created in above step
+2) Copy latest .jar file available in the "EXE" folder of the repo and put it into the folder you created in the above step
 
 3) Install Chrome
 
@@ -27,7 +27,7 @@ Clone the repo
 ```
 
 # Note
-Application runs in two steps. In the first, it will perform login and load all the comments on the web page by opening the post URL(It will wait for 60 sec after loading all the comments to handle network issue). Now, in the second part it will start scraping the comments (By waiting random time between 1 to 30 seconds).
+The application runs in two steps. In the first, it will perform login and load all the comments on the web page by opening the post URL(It will wait for 60 sec after loading all the comments to handle network issue). Now, in the second part, it will start scraping the comments (By waiting random time between 1 to 30 seconds).
 
 # Home
 ![Screenshot (125)](https://user-images.githubusercontent.com/32254687/97078177-d0e23580-1607-11eb-9c90-3089718abacd.png)
